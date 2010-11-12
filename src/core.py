@@ -1,10 +1,13 @@
 
+import rtmidi
+
 import ConfigParser
 import time
 import sys
 
 from midi import MidiEngine
-from translator import *
+from translator.factory import TranslatorFactory
+import translator.translator
 from channel import Channel
 from log import Logger
 
