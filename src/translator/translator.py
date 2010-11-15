@@ -1,4 +1,6 @@
 
+import time
+
 import core
 from base import Translator
 from factory import TranslatorFactory
@@ -9,6 +11,8 @@ class TranslatorFx(Translator):
     STATE_MUTE = 1
     STATE_FX1 = 2
     STATE_FX2 = 3
+    
+    SWITCH_INTERVAL = 0.02
     
     state_names = {
         STATE_NORMAL    : 'Normal',
@@ -30,6 +34,7 @@ class TranslatorFx(Translator):
         self.add_ctrl('master', self.host, int(options['cc_master']))
         self.add_ctrl('send1', self.host, int(options['cc_send1']))
         self.add_ctrl('send2', self.host, int(options['cc_send2']))
+        self.add_ctrl('selector', self.host, int(options['cc_selector']))
         
         self.__set_state(self.STATE_NORMAL)
         
@@ -52,14 +57,32 @@ class TranslatorFx(Translator):
 
         if self.__state == self.STATE_NORMAL:
             self.__update_levels(127, 0, 0)
+            self.send_ctrl('master', 127)
+            time.sleep(self.SWITCH_INTERVAL)
+            self.send_ctrl('send1', 0)
+            self.send_ctrl('send2', 0)
         elif self.__state == self.STATE_MUTE:
             self.__update_levels(0, 0, 0)
+            self.send_ctrl('master', 0)
+            self.send_ctrl('send1', 0)
+            self.send_ctrl('send2', 0)
         elif self.__state == self.STATE_FX1:
             self.__update_levels(0, 127, 0)
+            self.send_ctrl('send1', 127)
+            time.sleep(self.SWITCH_INTERVAL)
+            self.send_ctrl('master', 0)
+            self.send_ctrl('send2', 0)
         elif self.__state == self.STATE_FX2:
             self.__update_levels(0, 0, 127)
+            time.sleep(self.SWITCH_INTERVAL)
+            self.send_ctrl('send2', 127)
+            self.send_ctrl('master', 0)
+            self.send_ctrl('send1', 0)
+            
+        self.send_ctrl('selector', (self.__state / 3.0) * 127.0)
         
     def __update_levels(self, master, send1, send2):
+        return
         self.send_ctrl('master', master)
         self.send_ctrl('send1', send1)
         self.send_ctrl('send2', send2)
@@ -109,6 +132,13 @@ class TranslatorLooper(Translator):
         self.add_cmd('undo_redo', self.host, int(options['note_undo_redo']))
         
         self.__set_state(self.STATE_CLEAR)
+
+        self.set_led('led1', False)
+        self.set_led('led2', False)
+        self.set_led('led3', False)
+        self.set_led('led4', False)
+        self.send_cmd('stop')
+        self.send_cmd('clear')
 
     def __key1(self, key):
         self.send_cmd('focus')
@@ -285,3 +315,61 @@ class TranslatorRepeat(Translator):
 
 
 TranslatorFactory.register(TranslatorRepeat)
+
+
+class TranslatorFXSelect(Translator):
+    
+    def __init__(self, options):
+        super(TranslatorFXSelect, self).__init__(self)
+
+        self.controller = core.Core.instance().get_channel_by_name(options['controller'])
+        self.host = core.Core.instance().get_channel_by_name(options['host'])
+        
+        self.add_key('key1', self.__key1, self.controller, int(options['note_key1']))
+        self.add_key('key2', self.__key2, self.controller, int(options['note_key2']))
+        self.add_key('key3', self.__key3, self.controller, int(options['note_key3']))
+        self.add_key('key4', self.__key4, self.controller, int(options['note_key4']))
+
+        self.add_led('led1', self.controller, int(options['note_led1']))
+        self.add_led('led2', self.controller, int(options['note_led2']))
+        self.add_led('led3', self.controller, int(options['note_led3']))
+        self.add_led('led4', self.controller, int(options['note_led4']))
+        
+        self.add_ctrl('fx1', self.host, int(options['cc_fx1']))
+        self.add_ctrl('fx2', self.host, int(options['cc_fx2']))
+        self.add_ctrl('fx3', self.host, int(options['cc_fx3']))
+        self.add_ctrl('fx4', self.host, int(options['cc_fx4']))
+        
+        self.send_ctrl('fx1', 0)
+        self.send_ctrl('fx2', 0)
+        self.send_ctrl('fx3', 0)
+        self.send_ctrl('fx4', 0)
+        
+        self.__state = [False, False, False, False]
+        
+    def __key1(self, key):
+        self.__switch(0)
+    
+    def __key2(self, key):
+        self.__switch(1)
+    
+    def __key3(self, key):
+        self.__switch(2)
+        
+    def __key4(self, key):
+        self.__switch(3)
+        
+    def __switch(self, fx):
+        self.__state[fx] = not self.__state[fx]
+        print "switched state of fx%d to %d" % (fx, self.__state[fx])
+        
+        if self.__state[fx]:
+            value = 127
+        else:
+            value = 0
+            
+        self.send_ctrl(['fx1', 'fx2', 'fx3', 'fx4'][fx], value)
+        self.set_led(['led1', 'led2', 'led3', 'led4'][fx], self.__state[fx])
+
+
+TranslatorFactory.register(TranslatorFXSelect)
