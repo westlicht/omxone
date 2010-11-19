@@ -23,11 +23,11 @@ class TranslatorLooper(Translator):
         self.controller = self.add_channel(options['controller'])
         self.host = self.add_channel(options['host'])
         
-        self.add_key('key1', self.__key1, self.controller, int(options['note_key1']))
-        self.add_key('key2', self.__key2, self.controller, int(options['note_key2']))
-        self.add_key('key3', self.__key3, self.controller, int(options['note_key3']))
-        self.add_key('key4', self.__key4, self.controller, int(options['note_key4']))
-        self.add_key('key5', self.__key5, self.controller, int(options['note_key5']))
+        self.add_key('key_rec', self.__key_rec, self.controller, int(options['key_rec']))
+        self.add_key('key_stop', self.__key_stop, self.controller, int(options['key_stop']))
+        self.add_key('key_half', self.__key_half, self.controller, int(options['key_half']))
+        self.add_key('key_double', self.__key_double, self.controller, int(options['key_double']))
+        self.add_key('key_undo', self.__key_undo, self.controller, int(options['key_undo']))
         
         self.add_led('led1', self.controller, int(options['note_led1']))
         self.add_led('led2', self.controller, int(options['note_led2']))
@@ -52,7 +52,7 @@ class TranslatorLooper(Translator):
         self.send_cmd('stop')
         self.send_cmd('clear')
 
-    def __key1(self, key):
+    def __key_rec(self, key):
         self.send_cmd('focus')
         if self.__state == self.STATE_CLEAR:
             # Start recording and switch to PLAY state
@@ -74,7 +74,7 @@ class TranslatorLooper(Translator):
             self.send_cmd('play')
             self.__set_state(self.STATE_PLAY)
 
-    def __key2(self, key):
+    def __key_stop(self, key):
         self.send_cmd('focus')
         if self.__state == self.STATE_CLEAR:
             # Clear recording
@@ -97,15 +97,15 @@ class TranslatorLooper(Translator):
             self.set_led('led2', False)
             self.__set_state(self.STATE_CLEAR)
 
-    def __key3(self, key):
+    def __key_half(self, key):
         self.send_cmd('focus')
         self.send_cmd('half')
 
-    def __key4(self, key):
+    def __key_double(self, key):
         self.send_cmd('focus')
         self.send_cmd('double')
         
-    def __key5(self, key):
+    def __key_undo(self, key):
         self.send_cmd('focus')
         self.send_cmd('undo_redo')
         

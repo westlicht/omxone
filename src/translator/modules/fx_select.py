@@ -11,10 +11,10 @@ class TranslatorFXSelect(Translator):
         self.controller = self.add_channel(options['controller'])
         self.host = self.add_channel(options['host'])
         
-        self.add_key('key1', self.__key1, self.controller, int(options['note_key1']))
-        self.add_key('key2', self.__key2, self.controller, int(options['note_key2']))
-        self.add_key('key3', self.__key3, self.controller, int(options['note_key3']))
-        self.add_key('key4', self.__key4, self.controller, int(options['note_key4']))
+        self.add_key('key1', self.__key_fx1, self.controller, int(options['key_fx1']))
+        self.add_key('key2', self.__key_fx2, self.controller, int(options['key_fx2']))
+        self.add_key('key3', self.__key_fx3, self.controller, int(options['key_fx3']))
+        self.add_key('key4', self.__key_fx4, self.controller, int(options['key_fx4']))
 
         self.add_led('led1', self.controller, int(options['note_led1']))
         self.add_led('led2', self.controller, int(options['note_led2']))
@@ -33,16 +33,16 @@ class TranslatorFXSelect(Translator):
         
         self.__state = [False, False, False, False]
         
-    def __key1(self, key):
+    def __key_fx1(self, key):
         self.__switch(0)
     
-    def __key2(self, key):
+    def __key_fx2(self, key):
         self.__switch(1)
     
-    def __key3(self, key):
+    def __key_fx3(self, key):
         self.__switch(2)
         
-    def __key4(self, key):
+    def __key_fx4(self, key):
         self.__switch(3)
         
     def __switch(self, fx):

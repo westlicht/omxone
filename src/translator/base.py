@@ -12,7 +12,7 @@ class Translator(object):
         self.__cmd_map = {}
         self.__led_map = {}
         self.__ctrl_map = {}
-            
+        
     def process(self, channel, msg):
         """
         Called for incoming MIDI messages. Calls the registered key handlers.
@@ -28,6 +28,9 @@ class Translator(object):
         channel.send(msg)
         
     def add_channel(self, name):
+        """
+        Adds a new channel to the translator.
+        """
         return self.__core.get_channel_by_name(name)
         
     def add_key(self, key, handler, channel, note):

@@ -10,10 +10,10 @@ class TranslatorSource(Translator):
         self.controller = self.add_channel(options['controller'])
         self.host = self.add_channel(options['host'])
         
-        self.add_key('key1', self.__key1, self.controller, int(options['note_key1']))
-        self.add_key('key2', self.__key2, self.controller, int(options['note_key2']))
-        self.add_key('key3', self.__key3, self.controller, int(options['note_key3']))
-        self.add_key('key4', self.__key4, self.controller, int(options['note_key4']))
+        self.add_key('key1', self.__key_channel1, self.controller, int(options['key_channel1']))
+        self.add_key('key2', self.__key_channel2, self.controller, int(options['key_channel2']))
+        self.add_key('key3', self.__key_channel3, self.controller, int(options['key_channel3']))
+        self.add_key('key4', self.__key_channel4, self.controller, int(options['key_channel4']))
 
         self.add_ctrl('channel1', self.host, int(options['cc_channel1']))
         self.add_ctrl('channel2', self.host, int(options['cc_channel2']))
@@ -25,16 +25,16 @@ class TranslatorSource(Translator):
         
         self.__set_source(0)
         
-    def __key1(self, key):
+    def __key_channel1(self, key):
         self.__set_source(0)
     
-    def __key2(self, key):
+    def __key_channel2(self, key):
         self.__set_source(1)
     
-    def __key3(self, key):
+    def __key_channel3(self, key):
         self.__set_source(2)
         
-    def __key4(self, key):
+    def __key_channel4(self, key):
         self.__set_source(3)
         
     def __set_source(self, source):

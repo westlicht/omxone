@@ -27,9 +27,10 @@ class TranslatorFx(Translator):
         self.controller = self.add_channel(options['controller'])
         self.host = self.add_channel(options['host'])
         
-        self.add_key('main', self.__key_main, self.controller, int(options['note_key1']))
-        self.add_key('fx1', self.__key_fx1, self.controller, int(options['note_key2']))
-        self.add_key('fx2', self.__key_fx2, self.controller, int(options['note_key3']))
+        self.add_key('main', self.__key_main, self.controller, int(options['key_main']))
+        self.add_key('fx1', self.__key_fx1, self.controller, int(options['key_fx1']))
+        self.add_key('fx2', self.__key_fx2, self.controller, int(options['key_fx2']))
+        self.add_key('reset', self.__key_reset, self.controller, int(options['key_reset']))
         
         self.add_ctrl('master', self.host, int(options['cc_master']))
         self.add_ctrl('send1', self.host, int(options['cc_send1']))
@@ -49,6 +50,9 @@ class TranslatorFx(Translator):
         
     def __key_fx2(self, key):
         self.__set_state(self.STATE_FX2)
+        
+    def __key_reset(self, key):
+        self.__set_state(self.STATE_NORMAL)
         
     def __set_state(self, state):
         self.__state = state
