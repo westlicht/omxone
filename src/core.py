@@ -12,14 +12,6 @@ from log import Logger
 
 class Core(object):
     
-    __instance = None
-    
-    @classmethod
-    def instance(cls):
-        if not cls.__instance:
-            cls.__instance = Core()
-        return cls.__instance
-    
     def __init__(self):
         self.config = None
         self.channels = {}

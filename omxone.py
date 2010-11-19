@@ -26,8 +26,8 @@ def main():
                       help="enter interactive mode")
     (options, args) = parser.parse_args()
     
-    
-    Core.instance().run(options)
+    core = Core()
+    core.run(options)
        
 if __name__ == '__main__':
     main() 
