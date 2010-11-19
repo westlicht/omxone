@@ -1,4 +1,5 @@
 
+from log import Logger
 from translator.base import Translator
 from translator.factory import TranslatorFactory
 
@@ -110,6 +111,6 @@ class TranslatorLooper(Translator):
         
     def __set_state(self, state):
         self.__state = state
-        print "Switching state to: %s" % (self.state_names[self.__state])
+        Logger.debug("Switching state to: %s" % (self.state_names[self.__state]))
         
 TranslatorFactory.register(TranslatorLooper)

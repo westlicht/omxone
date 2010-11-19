@@ -1,6 +1,7 @@
 
 import time
 
+from log import Logger
 from translator.base import Translator
 from translator.factory import TranslatorFactory
 
@@ -52,7 +53,7 @@ class TranslatorFx(Translator):
     def __set_state(self, state):
         self.__state = state
         
-        print self.state_names[self.__state]
+        Logger.debug("Switching to state %s" % (self.state_names[self.__state]))
 
         if self.__state == self.STATE_NORMAL:
             self.__update_levels(127, 0, 0)

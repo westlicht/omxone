@@ -4,17 +4,6 @@ import binascii
 import rtmidi
 
 
-def dump_msg(msg):
-    raw = binascii.hexlify(msg.getRawData())
-    channel = msg.getChannel()    
-    if msg.isNoteOn():
-        print raw, channel, 'ON: ', msg.getNoteNumber(), msg.getVelocity()
-    elif msg.isNoteOff():
-        print raw, channel, 'OFF:', msg.getNoteNumber()
-    elif msg.isController():
-        print raw, channel, 'CONTROLLER', msg.getControllerNumber(), msg.getControllerValue()
-
-
 class MidiEngine(object):
     
     inputs = []
@@ -49,14 +38,15 @@ class MidiEngine(object):
         
     @classmethod
     def dump_msg(cls, msg):
-        raw = binascii.hexlify(msg.getRawData())
-        channel = msg.getChannel()    
+        text = ""
         if msg.isNoteOn():
-            return raw, channel, 'ON: ', msg.getNoteNumber(), msg.getVelocity()
+            text += "ON (channel: %d note: %d velocity: %d) " % (msg.getChannel(), msg.getNoteNumber(), msg.getVelocity())
         elif msg.isNoteOff():
-            return raw, channel, 'OFF:', msg.getNoteNumber()
+            text += "OFF (channel: %d note: %d) " % (msg.getChannel(), msg.getNoteNumber())
         elif msg.isController():
-            return raw, channel, 'CONTROLLER', msg.getControllerNumber(), msg.getControllerValue()
+            text += "CC (channel: %d cc: %d value: %d) " % (msg.getChannel(), msg.getControllerNumber(), msg.getControllerValue())
+        text += "[%s]" % (binascii.hexlify(msg.getRawData()))
+        return text
 
 
 class MidiInput(object):

@@ -1,4 +1,5 @@
 
+from log import Logger
 from translator.base import Translator
 from translator.factory import TranslatorFactory
 
@@ -46,7 +47,7 @@ class TranslatorFXSelect(Translator):
         
     def __switch(self, fx):
         self.__state[fx] = not self.__state[fx]
-        print "switched state of fx%d to %d" % (fx, self.__state[fx])
+        Logger.debug("Switching state of fx%d to %d" % (fx, self.__state[fx]))
         
         if self.__state[fx]:
             value = 127
