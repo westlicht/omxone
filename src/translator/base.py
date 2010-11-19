@@ -1,13 +1,13 @@
 
 import rtmidi
 
-import core
 from log import Logger
 
 class Translator(object):
     
-    def __init__(self, options):
+    def __init__(self, core, options):
         
+        self.__core = core
         self.__key_map = {}
         self.__cmd_map = {}
         self.__led_map = {}
@@ -26,6 +26,9 @@ class Translator(object):
     
     def send(self, channel, msg):
         channel.send(msg)
+        
+    def add_channel(self, name):
+        return self.__core.get_channel_by_name(name)
         
     def add_key(self, key, handler, channel, note):
         """
