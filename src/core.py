@@ -23,6 +23,10 @@ class Core(object):
         Runs the application. 'options' contains the CLI options dictionary.
         """
         
+        # Setup logging
+        if options.debug:
+            Logger.set_log_level(Logger.DEBUG)
+        
         # Load configuration
         self.config = ConfigParser.RawConfigParser()
         self.config.read(options.config)

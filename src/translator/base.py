@@ -93,4 +93,4 @@ class Translator(object):
         """
         channel = self.__ctrl_map[ctrl]['channel']
         cc = self.__ctrl_map[ctrl]['cc']
-        channel.send(rtmidi.MidiMessage.controllerEvent(1, cc, value))
+        channel.send(rtmidi.MidiMessage.controllerEvent(1, cc, int(value)))

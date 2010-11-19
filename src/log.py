@@ -6,7 +6,7 @@ class Logger(object):
     INFO = 1
     DEBUG = 2
     
-    level = DEBUG
+    level = OFF
     
     @classmethod
     def info(cls, text):
@@ -21,3 +21,7 @@ class Logger(object):
         if level <= cls.level:
             print(text)
         
+    @classmethod
+    def set_log_level(cls, level):
+        cls.level = level
+    
