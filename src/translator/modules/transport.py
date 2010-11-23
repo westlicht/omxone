@@ -25,11 +25,9 @@ class TranslatorTransport(Translator):
         self.send_cmd('next_scene')
         time.sleep(0.1)
         self.send_cmd('play')
-        self.send_cmd('prev_scene')
     
     def __key_play(self, key):
         self.send_cmd('play')
-        self.send_cmd('prev_scene')
     
     def __key_next_scene(self, key):
         self.send_cmd('next_scene')
