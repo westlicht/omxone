@@ -9,6 +9,7 @@ class Translator(object):
         
         self.__core = core
         self.__key_map = {}
+        self.__knob_map = {}
         self.__cmd_map = {}
         self.__led_map = {}
         self.__ctrl_map = {}
@@ -21,6 +22,12 @@ class Translator(object):
             try:
                 info = self.__key_map[channel][msg.getNoteNumber()]
                 info['handler'](info['key'])
+            except KeyError:
+                pass
+        if msg.isController():
+            try:
+                info = self.__knob_map[channel][msg.getControllerNumber()]
+                info['handler'](info['knob'], msg.getControllerValue())
             except KeyError:
                 pass
     
@@ -44,6 +51,18 @@ class Translator(object):
             channel_map = {}
             self.__key_map[channel] = channel_map
         channel_map[note] = { 'key': key, 'handler': handler }
+        
+    def add_knob(self, knob, handler, channel, cc):
+        """
+        Adds a knob handler to the translator. The knob handler is called
+        when receiving the specified controller change on the given channel.
+        """
+        try:
+            channel_map = self.__knob_map[channel]
+        except KeyError:
+            channel_map = {}
+            self.__knob_map[channel] = channel_map
+        channel_map[cc] = { 'knob': knob, 'handler': handler }
         
     def add_cmd(self, cmd, channel, note):
         """
