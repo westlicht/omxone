@@ -1,0 +1,18 @@
+MIDI Setup
+
+Allen&Heath XONE:4D
+MIDI Channel: 1
+
+IAC Driver live2omxone & omxone2live
+MIDI Channel: 2
+
+KORG NanoKontrol
+MIDI Channel: 4
+
+Novation LaunchPAD
+Default Channel
+
+Novation ReMOTE 25 SL
+Keyboard Channel: 8
+
+
