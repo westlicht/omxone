@@ -36,10 +36,12 @@ class TranslatorTransport(Translator):
         self.send_cmd('play')
     
     def __key_prev_scene(self, key):
-        self.send_cmd('prev_scene')
+        pass
+		#self.send_cmd('prev_scene')
         
     def __key_next_scene(self, key):
-        self.send_cmd('next_scene')
+        pass
+		#self.send_cmd('next_scene')
         
 
 TranslatorFactory.register(TranslatorTransport)
