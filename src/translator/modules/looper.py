@@ -25,30 +25,35 @@ class TranslatorLooper(Translator):
         
         self.add_key('key_rec', self.__key_rec, self.controller, int(options['key_rec']))
         self.add_key('key_stop', self.__key_stop, self.controller, int(options['key_stop']))
+        self.add_key('key_rev', self.__key_rev, self.controller, int(options['key_rev']))
         self.add_key('key_half', self.__key_half, self.controller, int(options['key_half']))
         self.add_key('key_double', self.__key_double, self.controller, int(options['key_double']))
         self.add_key('key_undo', self.__key_undo, self.controller, int(options['key_undo']))
         
-        self.add_led('led1', self.controller, int(options['note_led1']))
-        self.add_led('led2', self.controller, int(options['note_led2']))
-        self.add_led('led3', self.controller, int(options['note_led3']))
-        self.add_led('led4', self.controller, int(options['note_led4']))
+        self.add_led('led_state', self.controller, int(options['led_state']))
+        self.add_led('led_data', self.controller, int(options['led_data']))
+        self.add_led('led_rev', self.controller, int(options['led_rev']))
+        self.add_led('led_half', self.controller, int(options['led_half']))
+        self.add_led('led_double', self.controller, int(options['led_double']))
         
         self.add_cmd('focus', self.host, int(options['note_focus']))
         self.add_cmd('rec_add', self.host, int(options['note_rec_add']))
         self.add_cmd('play', self.host, int(options['note_play']))
         self.add_cmd('stop', self.host, int(options['note_stop']))
         self.add_cmd('clear', self.host, int(options['note_clear']))
+        self.add_cmd('rev', self.host, int(options['note_rev']))
         self.add_cmd('half', self.host, int(options['note_half']))
         self.add_cmd('double', self.host, int(options['note_double']))
         self.add_cmd('undo_redo', self.host, int(options['note_undo_redo']))
         
+        self.__rev = False
         self.__set_state(self.STATE_CLEAR)
 
-        self.set_led('led1', False)
-        self.set_led('led2', False)
-        self.set_led('led3', False)
-        self.set_led('led4', False)
+        self.set_led_launchpad('led_state', 'red')
+        self.set_led_launchpad('led_data', 'off')
+        self.set_led_launchpad('led_rev', 'off')
+        self.set_led_launchpad('led_half', 'yellow')
+        self.set_led_launchpad('led_double', 'yellow')
         self.send_cmd('stop')
         self.send_cmd('clear')
 
@@ -57,21 +62,23 @@ class TranslatorLooper(Translator):
         if self.__state == self.STATE_CLEAR:
             # Start recording and switch to PLAY state
             self.send_cmd('rec_add')
-            self.set_led('led2', True)
+            self.set_led_launchpad('led_state', 'red')
+            self.set_led_launchpad('led_data', 'yellow')
             self.__set_state(self.STATE_PLAY)
         elif self.__state == self.STATE_PLAY:
             # Start overdub recording and switch to OVERDUB state
             self.send_cmd('rec_add')
-            self.set_led('led1', True)
+            self.set_led_launchpad('led_state', 'yellow')
             self.__set_state(self.STATE_OVERDUB)
         elif self.__state == self.STATE_OVERDUB:
             # Stop overdub recording and switch to PLAY state
             self.send_cmd('play')
-            self.set_led('led1', False)
+            self.set_led_launchpad('led_state', 'green')
             self.__set_state(self.STATE_PLAY)
         elif self.__state == self.STATE_IDLE:
             # Start playback and switch to PLAY state
             self.send_cmd('play')
+            self.set_led_launchpad('led_state', 'green')
             self.__set_state(self.STATE_PLAY)
 
     def __key_stop(self, key):
@@ -79,23 +86,29 @@ class TranslatorLooper(Translator):
         if self.__state == self.STATE_CLEAR:
             # Clear recording
             self.send_cmd('clear')
-            self.set_led('led1', False)
-            self.set_led('led2', False)
+            self.set_led_launchpad('led_state', 'red')
+            self.set_led_launchpad('led_data', 'off')
         elif self.__state == self.STATE_PLAY:
             # Stop playback and switch to IDLE state
             self.send_cmd('stop')
+            self.set_led_launchpad('led_state', 'off')
             self.__set_state(self.STATE_IDLE)
         elif self.__state == self.STATE_OVERDUB:
             # Stop overdub recording and switch to IDLE state
             self.send_cmd('stop')
-            self.set_led('led1', False)
+            self.set_led_launchpad('led_state', 'off')
             self.__set_state(self.STATE_IDLE)
         elif self.__state == self.STATE_IDLE:
             # Clear recording and switch to CLEAR state
             self.send_cmd('clear')
-            self.set_led('led1', False)
-            self.set_led('led2', False)
+            self.set_led_launchpad('led_state', 'red')
+            self.set_led_launchpad('led_data', 'off')
             self.__set_state(self.STATE_CLEAR)
+
+    def __key_rev(self, key):
+        self.send_cmd('rev')
+        self.__rev = not self.__rev
+        self.set_led_launchpad('led_rev', ['off','yellow'][self.__rev])
 
     def __key_half(self, key):
         self.send_cmd('focus')

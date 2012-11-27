@@ -26,11 +26,17 @@ class TranslatorFx(Translator):
         
         self.controller = self.add_channel(options['controller'])
         self.host = self.add_channel(options['host'])
+        self.launchpad = bool(options['launchpad'])
         
         self.add_key('main', self.__key_main, self.controller, int(options['key_main']))
         self.add_key('fx1', self.__key_fx1, self.controller, int(options['key_fx1']))
         self.add_key('fx2', self.__key_fx2, self.controller, int(options['key_fx2']))
         self.add_key('reset', self.__key_reset, self.controller, int(options['key_reset']))
+        
+        if self.launchpad:
+            self.add_led('main', self.controller, int(options['key_main']))
+            self.add_led('fx1', self.controller, int(options['key_fx1']))
+            self.add_led('fx2', self.controller, int(options['key_fx2']))
         
         self.add_ctrl('master', self.host, int(options['cc_master']))
         self.add_ctrl('send1', self.host, int(options['cc_send1']))
@@ -84,6 +90,11 @@ class TranslatorFx(Translator):
             self.send_ctrl('send1', 0)
             
         self.send_ctrl('selector', (self.__state / 3.0) * 127.0)
+        
+        if self.launchpad:
+            self.set_led_launchpad('main', ['green', 'red', 'off', 'off'][self.__state])
+            self.set_led_launchpad('fx1', ['off', 'red', 'green', 'off'][self.__state])
+            self.set_led_launchpad('fx2', ['off', 'red', 'off', 'green'][self.__state])
         
     def __update_levels(self, master, send1, send2):
         return

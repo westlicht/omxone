@@ -2,6 +2,24 @@
 import binascii
 import rtmidi
 
+class MidiMessage(object):
+    
+    @classmethod
+    def note_on(cls, channel, note, velocity):
+        msg = rtmidi.MidiMessage.noteOn(channel, note, velocity)
+        msg.setNoteNumber(note)
+        return msg
+
+    @classmethod
+    def note_off(cls, channel, note):
+        msg = rtmidi.MidiMessage.noteOff(channel, note)
+        msg.setNoteNumber(note)
+        return msg
+
+    @classmethod
+    def controller_event(cls, channel, cc, value):
+        return rtmidi.MidiMessage.controllerEvent(channel, cc, int(value))
+
 
 class MidiEngine(object):
     
@@ -46,6 +64,7 @@ class MidiEngine(object):
             text += "CC (channel: %d cc: %d value: %d) " % (msg.getChannel(), msg.getControllerNumber(), msg.getControllerValue())
         text += "[%s]" % (binascii.hexlify(msg.getRawData()))
         return text
+
 
 
 class MidiInput(object):

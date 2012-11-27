@@ -3,6 +3,8 @@ import fx_select
 import fx
 import looper
 import midi_source
+import row_select
+import row_toggle
 import source
 import test
 import transport
