@@ -6,6 +6,7 @@ import time
 import sys
 
 from midi import MidiEngine
+from midi import MidiMessage
 from translator.factory import TranslatorFactory
 from channel import Channel
 from log import Logger
@@ -16,7 +17,6 @@ class Core(object):
         self.config = None
         self.channels = {}
         self.translators = []
-            
 
     def run(self, options):
         """
@@ -55,6 +55,11 @@ class Core(object):
                 channel = self.config.getint(section, 'channel')
                 self.channels[name] = Channel(name, input, output, channel)
                 
+        # Open channels
+        for channel in self.channels.values():
+            channel.receive = self.__receive
+            channel.open()
+                    
         # Create translators
         for section in self.config.sections():
             if section.find('Translator') == 0:
@@ -67,10 +72,6 @@ class Core(object):
                 if translator:
                     self.translators.append(translator)
                     
-        # Open channels
-        for channel in self.channels.values():
-            channel.receive = self.__receive
-            channel.open()
         
     def loop(self):
         while True:
@@ -127,5 +128,5 @@ class Core(object):
                 channel.send(rtmidi.MidiMessage.controllerEvent(1, value, 101))
                 channel.send(rtmidi.MidiMessage.controllerEvent(1, value, 100))
             elif cmd == 'note':
-                channel.send(rtmidi.MidiMessage.noteOn(1, value, 100))
-                channel.send(rtmidi.MidiMessage.noteOff(1, value))
+                channel.send(MidiMessage.note_on(1, value, 100))
+                channel.send(MidiMessage.note_off(1, value))

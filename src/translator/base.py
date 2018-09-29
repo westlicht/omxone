@@ -2,6 +2,7 @@
 import rtmidi
 
 from log import Logger
+from midi import MidiMessage
 
 class Translator(object):
     
@@ -88,15 +89,15 @@ class Translator(object):
         """
         self.__ctrl_map[ctrl] = { 'channel': channel, 'cc': cc }
     
-    def send_cmd(self, cmd):
+    def send_cmd(self, cmd, velocity=127):
         """
         Sends a command. This will send a note on followed by note off event.
         """
         channel = self.__cmd_map[cmd]['channel']
         note = self.__cmd_map[cmd]['note']
-        channel.send(rtmidi.MidiMessage.noteOn(1, note, 127))
-        channel.send(rtmidi.MidiMessage.noteOff(1, note))
-    
+        channel.send(MidiMessage.note_on(1, note, velocity))
+        channel.send(MidiMessage.note_off(1, note))
+
     def set_led(self, led, on):
         """
         Sets a LED. Sends a note on when the LED is enabled, or note of if it
@@ -105,9 +106,25 @@ class Translator(object):
         channel = self.__led_map[led]['channel']
         note = self.__led_map[led]['note']
         if on:
-            channel.send(rtmidi.MidiMessage.noteOn(1, note, 127))
+            channel.send(MidiMessage.note_on(1, note, 127))
         else:
-            channel.send(rtmidi.MidiMessage.noteOff(1, note))
+            channel.send(MidiMessage.note_off(1, note))
+    
+    def set_led_launchpad(self, led, color):
+        """
+        Sets a LED. Sends a note on when the LED is enabled, or note of if it
+        is disabled.
+        """
+        channel = self.__led_map[led]['channel']
+        note = self.__led_map[led]['note']
+        if color == 'off':
+            channel.send(MidiMessage.note_on(1, note, 0x04))
+        elif color == 'red':
+            channel.send(MidiMessage.note_on(1, note, 0x07))
+        elif color == 'green':
+            channel.send(MidiMessage.note_on(1, note, 0x34))
+        elif color == 'yellow':
+            channel.send(MidiMessage.note_on(1, note, 0x37))
     
     def send_ctrl(self, ctrl, value):
         """
@@ -115,4 +132,4 @@ class Translator(object):
         """
         channel = self.__ctrl_map[ctrl]['channel']
         cc = self.__ctrl_map[ctrl]['cc']
-        channel.send(rtmidi.MidiMessage.controllerEvent(1, cc, int(value)))
+        channel.send(MidiMessage.controller_event(1, cc, int(value)))
